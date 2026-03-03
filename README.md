@@ -9,7 +9,7 @@ Add `apple_auth` to your dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:apple_auth, "~> 0.1.0"}          # or from Hex once published
+    {:apple_auth, "~> 0.1.0"}          
   ]
 end
 ```

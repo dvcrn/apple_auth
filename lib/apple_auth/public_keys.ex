@@ -135,11 +135,7 @@ defmodule AppleAuth.PublicKeys do
     case Req.get(@jwks_url, decode_body: false, redirect: true) do
       {:ok, %{status: 200, headers: headers, body: body}} ->
         with {:ok, %{"keys" => keys_list}} <- Jason.decode(to_binary(body)) do
-          keys_map =
-            keys_list
-            |> Enum.filter(&is_map/1)
-            |> Map.new(fn %{"kid" => kid} = jwk -> {kid, jwk} end)
-
+          keys_map = build_keys_map(keys_list)
           ttl_s = cache_max_age_seconds(headers) || @fallback_ttl_seconds
           {:ok, keys_map, ttl_s}
         end
@@ -151,6 +147,18 @@ defmodule AppleAuth.PublicKeys do
         {:error, reason}
     end
   end
+
+  defp build_keys_map(keys_list) when is_list(keys_list) do
+    Enum.reduce(keys_list, %{}, &put_key_if_valid/2)
+  end
+
+  defp build_keys_map(_), do: %{}
+
+  defp put_key_if_valid(%{"kid" => kid} = jwk, acc) when is_binary(kid) and kid != "" do
+    Map.put(acc, kid, jwk)
+  end
+
+  defp put_key_if_valid(_, acc), do: acc
 
   defp cache_max_age_seconds(headers) do
     Enum.find_value(headers, fn {k, v} ->

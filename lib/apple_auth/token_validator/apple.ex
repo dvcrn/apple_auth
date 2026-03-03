@@ -69,9 +69,8 @@ defmodule AppleAuth.TokenValidator.Apple do
     with :ok <- require_iss(claims),
          :ok <- require_aud(claims, bundle_id),
          :ok <- require_sub(claims),
-         :ok <- require_exp_future(claims, now),
-         :ok <- require_iat_past(claims, now) do
-      :ok
+         :ok <- require_exp_future(claims, now) do
+      require_iat_past(claims, now)
     end
   end
 

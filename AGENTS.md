@@ -1,0 +1,2 @@
+- always run `mix lint` after code changes
+- always format code with `mise run format`

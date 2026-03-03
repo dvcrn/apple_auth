@@ -76,11 +76,12 @@ defmodule AppleAuth.PlugTest do
       conn =
         conn(:get, "/")
         |> put_req_header("authorization", "Bearer bad-token")
-        |> AppleAuth.Plug.call(AppleAuth.Plug.init(on_invalid_token: {:assign_error, :auth_error}))
+        |> AppleAuth.Plug.call(
+          AppleAuth.Plug.init(on_invalid_token: {:assign_error, :auth_error})
+        )
 
       assert conn.assigns[:auth_error] == :token_expired
       refute conn.halted
     end
   end
-
 end

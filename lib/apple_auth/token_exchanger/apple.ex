@@ -68,10 +68,8 @@ defmodule AppleAuth.TokenExchanger.Apple do
       "sub" => bundle_id
     }
 
-    case Joken.Signer.sign(claims, signer) do
-      {:ok, signed} -> {:ok, signed}
-      {:error, reason} -> {:error, {:signing_failed, reason}}
-    end
+    {:ok, signed} = Joken.Signer.sign(claims, signer)
+    {:ok, signed}
   rescue
     e -> {:error, {:signing_error, e}}
   end
